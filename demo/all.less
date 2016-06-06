@@ -1,0 +1,29 @@
+// est variables
+@support-old-ie: false;
+
+/**
+ * @file 引用外部less文件
+ */
+@dep-path: "../dep";
+
+// eicons
+@import "@{dep-path}/eicons/src/main.less";
+@import "@{dep-path}/eicons/src/icon-utils.less";
+
+// 设置font文件地址
+@eicons-font-path: "@{dep-path}/eicons/fonts";
+
+// import est
+@import "@{dep-path}/est/src/all.less";
+
+.global-normalize();
+
+// import esf
+@import "@{dep-path}/esf/theme/standard/main.less";
+
+.esui-loader-bouncers();
+
+// import esui
+@import "@{dep-path}/esui/theme/standard/Main.less";
+
+@import "../src/lightTable.less";

@@ -1,0 +1,64 @@
+<!-- target: main -->
+<table>
+    <!-- import: head -->
+    <!-- import: body -->
+</table>
+
+<!-- target: head -->
+<thead>
+    <tr class="${.head-row}">
+        <!-- if: ${selectMode} !== 'none' -->
+        <th>
+            <!-- if: ${selectMode} === 'multiple' -->
+            <input type="checkbox" id="${#check-all}">
+            <!-- /if -->
+        </th>
+        <!-- /if -->
+        <!-- for: ${fields} as ${field} -->
+        <!-- import: headCell -->
+        <!-- /for -->
+    </tr>
+</thead>
+
+<!-- target: headCell -->
+<th class="${.head-cell} ${classPrefix}-head-cell-for-${field.field}">
+    <span class="${.head-title}">${field.title}</span>
+    <!-- if: ${field.tip} -->
+    <esui-tip>${field.tip}</esui-tip>
+    <!-- /if -->
+    <!-- if: ${field.sortable} -->
+    <i class="${.sort-label} ui-icon ui-icon-sort"></i>
+    <!-- /if -->
+</th>
+
+<!-- target: body -->
+<tbody>
+    <!-- for: ${rows} as ${row} -->
+    <!-- import: row -->
+    <!-- /for -->
+</tbody>
+
+<!-- target: row -->
+<tr class="${.row}">
+    <!-- if: ${selectMode} !== 'none' -->
+    <td>
+        <!-- if: ${selectMode} === 'multiple' -->
+        <input class="${.row-select}" type="checkbox">
+        <!-- else: -->
+        <input class="${.row-select}" type="radio">
+        <!-- /if -->
+    </td>
+    <!-- /if -->
+    <!-- for: ${row.cells} as ${cell} -->
+    <!-- import: cell -->
+    <!-- /for -->
+</tr>
+
+<!-- target: cell -->
+<td>
+    <!-- if: ${cell.renderType} === 'html' -->
+        ${cell.content | raw}
+    <!-- else: -->
+        ${cell.content}
+    <!-- /if -->
+</td>

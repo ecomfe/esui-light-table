@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charse="utf-8" />
+    <title>LightTable Demo</title>
+    <link rel="stylesheet" href="./all.css">
+    <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/2-1-4/esl.js"></script>
+</head>
+<body>
+    <script>
+        require.config({
+            'waitSeconds': 5,
+            'baseUrl': '../src',
+            'paths': { 'text': '../demo/text' },
+            'packages': [
+                {
+                    'name': 'eicons',
+                    'location': '../dep/eicons/src',
+                    'main': 'main.less'
+                },
+                {
+                    'name': 'eoo',
+                    'location': '../dep/eoo/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'esf',
+                    'location': '../dep/esf/src'
+                },
+                {
+                    'name': 'est',
+                    'location': '../dep/est/src'
+                },
+                {
+                    'name': 'esui',
+                    'location': '../dep/esui/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'etpl',
+                    'location': '../dep/etpl/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'jquery',
+                    'location': '../dep/jquery/src',
+                    'main': 'jquery'
+                },
+                {
+                    'name': 'mini-event',
+                    'location': '../dep/mini-event/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'moment',
+                    'location': '../dep/moment/src',
+                    'main': 'moment'
+                },
+                {
+                    'name': 'underscore',
+                    'location': '../dep/underscore/src',
+                    'main': 'underscore'
+                }
+            ]
+        });
+    </script>
+    <div id="container">
+    </div>
+    <script>
+        var datasource = [
+            {
+                "id": 2345678,
+                "name": "<input />",
+                "url": "http://www.baidu.com",
+                "expired": "20141212"
+            },
+            {
+                "id": 2345678,
+                "name": "<input />",
+                "url": "http://www.baidu.com",
+                "expired": "20141212"
+            },
+            {
+                "id": 2345678,
+                "name": "<input />",
+                "url": "http://www.baidu.com",
+                "expired": "20141212"
+            },
+            {
+                "id": 2345678,
+                "name": "<input />",
+                "url": "http://www.baidu.com",
+                "expired": "20141212"
+            },
+            {
+                "id": 2345678,
+                "name": "<input />",
+                "url": "http://www.baidu.com",
+                "expired": "20141212"
+            },
+            {
+                "id": 2345678,
+                "name": "<input />",
+                "url": "http://www.baidu.com",
+                "expired": "20141212"
+            }
+        ];
+        var fields = [
+            {
+                field: 'id',
+                title: 'ID',
+                content(item) {
+                    return item.id;
+                }
+            },
+            {
+                field: 'name',
+                title: '名称',
+                sortable: true,
+                content(item) {
+                    return item.name;
+                }
+            }
+        ];
+
+        require(
+            ['LightTable'],
+            function (module) {
+                var LightTable = module.default;
+                var options = {
+                    fields: fields,
+                    datasource: datasource,
+                    selectMode: 'multiple',
+                    selectedIndex: [0, 1, 2, 3, 4, 5],
+                    order: 'name',
+                    orderBy: 'asc'
+                };
+                var table = new LightTable(options)
+                table.appendTo(document.getElementById('container'));
+            }
+        );
+    </script>
+</body>
+</html>
