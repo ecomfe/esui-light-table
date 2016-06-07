@@ -8,7 +8,7 @@
 <thead>
     <tr class="${.head-row}">
         <!-- if: ${selectMode} !== 'none' -->
-        <th>
+        <th class="${.head-select-cell}">
             <!-- if: ${selectMode} === 'multiple' -->
             <input type="checkbox" id="${#check-all}">
             <!-- /if -->
@@ -55,8 +55,8 @@
 </tr>
 
 <!-- target: cell -->
-<td>
-    <!-- if: ${cell.renderType} === 'html' -->
+<td class="${.cell}<!-- if: ${field.contentType} === 'ui'--> ${.cell-ui}<!-- /if -->">
+    <!-- if: ${field.contentType} === 'html'  || ${field.contentType} === 'ui' -->
         ${cell.content | raw}
     <!-- else: -->
         ${cell.content}

@@ -69,46 +69,47 @@
     <script>
         var datasource = [
             {
-                "id": 2345678,
-                "name": "<input />",
-                "url": "http://www.baidu.com",
-                "expired": "20141212"
+                id: 2345678,
+                name: '<span style="color: red">test</span>',
+                url: 'http://www.baidu.com',
+                expired: '20141212'
             },
             {
-                "id": 2345678,
-                "name": "<input />",
-                "url": "http://www.baidu.com",
-                "expired": "20141212"
+                id: 2345678,
+                name: '<span style="color: red">test</span>',
+                url: 'http://www.baidu.com',
+                expired: '20141212'
             },
             {
-                "id": 2345678,
-                "name": "<input />",
-                "url": "http://www.baidu.com",
-                "expired": "20141212"
+                id: 2345678,
+                name: '<span style="color: red">test</span>',
+                url: 'http://www.baidu.com',
+                expired: '20141212'
             },
             {
-                "id": 2345678,
-                "name": "<input />",
-                "url": "http://www.baidu.com",
-                "expired": "20141212"
+                id: 2345678,
+                name: '<span style="color: red">test</span>',
+                url: 'http://www.baidu.com',
+                expired: '20141212'
             },
             {
-                "id": 2345678,
-                "name": "<input />",
-                "url": "http://www.baidu.com",
-                "expired": "20141212"
+                id: 2345678,
+                name: '<span style="color: red">test</span>',
+                url: 'http://www.baidu.com',
+                expired: '20141212'
             },
             {
-                "id": 2345678,
-                "name": "<input />",
-                "url": "http://www.baidu.com",
-                "expired": "20141212"
+                id: 2345678,
+                name: '<span style="color: red">test</span>',
+                url: 'http://www.baidu.com',
+                expired: '20141212'
             }
         ];
         var fields = [
             {
                 field: 'id',
                 title: 'ID',
+                tip: '内容为文本，自动转义',
                 content(item) {
                     return item.id;
                 }
@@ -116,15 +117,29 @@
             {
                 field: 'name',
                 title: '名称',
+                tip: '内容支持HTML',
                 sortable: true,
+                contentType: 'html',
                 content(item) {
                     return item.name;
+                }
+            },
+            {
+                field: 'expired',
+                title: '到期日',
+                tip: '内容支持UI控件',
+                contentType: 'ui',
+                content(item) {
+                    return `
+                        <esui-calendar data-ui-value="${item.expired}" data-ui-param-format="YYYYMMDD">
+                        </esui-calendar>
+                    `;
                 }
             }
         ];
 
         require(
-            ['LightTable'],
+            ['LightTable', 'esui/Calendar'],
             function (module) {
                 var LightTable = module.default;
                 var options = {
@@ -132,11 +147,14 @@
                     datasource: datasource,
                     selectMode: 'multiple',
                     selectedIndex: [0, 1, 2, 3, 4, 5],
-                    order: 'name',
-                    orderBy: 'asc'
+                    orderBy: 'name',
+                    order: 'asc'
                 };
                 var table = new LightTable(options)
                 table.appendTo(document.getElementById('container'));
+
+                table.on('select', function () { console.log('select', table.get('selectedIndex')); });
+                table.on('sort', function () { console.log('sort', table.get('orderBy'), table.get('order')); });
             }
         );
     </script>

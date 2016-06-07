@@ -1,40 +1,41 @@
 {
-    "name": "esui-light-table",
-    "version": "0.0.1",
-    "description": "edp project",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "esui-light-table",
+  "version": "0.0.1",
+  "description": "edp project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "edp": {
+    "wwwroot": "/",
+    "depDir": "dep",
+    "srcDir": "src",
+    "loaderAutoConfig": "js,htm,html,tpl,vm,phtml",
+    "loaderUrl": "http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-2/esl.js",
+    "dependencies": {
+      "eicons": "~1.0.0",
+      "eoo": "~0.1.4",
+      "esf": "~1.0.0",
+      "est": "~1.3.0",
+      "esui": "~3.2.0-beta.5",
+      "etpl": "~3.1.1",
+      "jquery": "~1.11.1",
+      "mini-event": "~1.0.2",
+      "moment": "~2.7.0",
+      "underscore": "~1.5.2"
     },
-    "edp": {
-        "wwwroot": "/",
-        "depDir": "dep",
-        "srcDir": "src",
-        "loaderAutoConfig": "js,htm,html,tpl,vm,phtml",
-        "loaderUrl": "http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-2/esl.js",
-        "dependencies": {
-            "eicons": "~1.0.0",
-            "eoo": "~0.1.4",
-            "esf": "~1.0.0",
-            "est": "~1.3.0",
-            "esui": "~3.2.0-beta.5",
-            "etpl": "~3.1.1",
-            "jquery": "~1.11.1",
-            "mini-event": "~1.0.2",
-            "moment": "~2.7.0",
-            "underscore": "~1.5.2"
-        },
-        "layout": "v2"
-    },
-    "dependencies": {},
-    "author": "",
-    "repository": "empty",
-    "license": "BSD",
-    "readme": "README",
-    "devDependencies": {
-        "babel-cli": "^6.9.0",
-        "babel-core": "^6.9.1",
-        "babel-plugin-transform-es2015-modules-amd": "^6.8.0",
-        "babel-preset-es2015": "^6.9.0"
-    }
+    "layout": "v2"
+  },
+  "dependencies": {},
+  "author": "",
+  "repository": "empty",
+  "license": "BSD",
+  "readme": "README",
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-core": "^6.9.1",
+    "babel-plugin-transform-es2015-modules-amd": "^6.8.0",
+    "babel-plugin-transform-function-bind": "^6.8.0",
+    "babel-preset-es2015": "^6.9.0"
+  }
 }

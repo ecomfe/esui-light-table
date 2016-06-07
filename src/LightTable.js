@@ -1,4 +1,5 @@
 import Control from 'esui/Control';
+import Tip from 'esui/Tip';
 import ui from 'esui';
 import $ from 'jquery';
 import u from 'underscore';
@@ -8,6 +9,8 @@ import TEMPLATE from 'text!./LightTable.tpl.html';
 let engine = new Engine();
 engine.addFilter('camelize', str => str.replace(/[A-Z]/g, char => '-' + char.toLowerCase()));
 engine.parse(TEMPLATE);
+
+export {engine};
 
 export default class LightTable extends Control {
     get type() {
@@ -26,6 +29,34 @@ export default class LightTable extends Control {
         super(options);
 
         this.helper.setTemplateEngine(engine);
+    }
+
+    buildSelector(selector) {
+        return selector.replace(
+            /([\.#])([\w\-]+)/g,
+            (selector, hint, part) => {
+                if (hint === '.') {
+                    return '.' + this.helper.getPrimaryClassName(part);
+                }
+
+                return '#' + this.helper.getId(part);
+            }
+        );
+    }
+
+    query(selector) {
+        return $(this.main).find(this.buildSelector(selector));
+    }
+
+    initEvents() {
+        let on = (event, selector, handler) => {
+            let parsedSelector = this.buildSelector(selector);
+            this.helper.addDOMEvent(this.main, event, parsedSelector, handler);
+        };
+
+        on('change', '#check-all', this.onSelectAll);
+        on('change', '.row-select', this.onSelectRow);
+        on('click', '.sort-label', this.onSort);
     }
 
     repaint(changes, changesIndex) {
@@ -54,8 +85,20 @@ export default class LightTable extends Control {
     renderAll() {
         let viewData = this.computeViewData();
         this.main.innerHTML = this.helper.renderTemplate('main', viewData);
+        this.initChildren(this.query('thead').get(0));
+        this.initUICells();
         this.syncSort();
         this.syncSelection();
+    }
+
+    renderBody() {
+        // TODO: 实现
+    }
+
+    initUICells(row) {
+        let classSelector = this.buildSelector('.cell-ui');
+        let cells = $(row || this.main).find(classSelector);
+        u.each(cells, this.initChildren, this);
     }
 
     computeViewData() {
@@ -83,20 +126,20 @@ export default class LightTable extends Control {
 
     syncSort() {
         let sortLabelClass = '.' + this.helper.getPrimaryClassName('sort-label');
-        let switchSortTo = (query, type) => {
+        let switchSortTo = (selector, type) => {
             let sortClassName = type ? 'ui-icon-sort-' + type : 'ui-icon-sort';
-            query.removeClass('ui-icon-sort ui-icon-sort-asc ui-icon-sort-desc').addClass(sortClassName);
+            this.query(selector)
+                .removeClass('ui-icon-sort ui-icon-sort-asc ui-icon-sort-desc')
+                .addClass(sortClassName);
         };
 
         // 恢复所有字段排序效果
-        switchSortTo($(this.main).find(sortLabelClass), null);
+        switchSortTo('.sort-label', null);
 
         // 设置单一字段排序
-        if (this.order) {
-            let headCell = $(this.main).find(`.${this.classPrefix}-head-cell-for-${this.order}`);
-            let orderBy = this.orderBy || 'asc';
-            var sortLabel = headCell.find(sortLabelClass);
-            switchSortTo(sortLabel, orderBy);
+        if (this.orderBy) {
+            let order = this.order || 'asc';
+            switchSortTo(`.head-cell-for-${this.orderBy} .sort-label`, order);
         }
     }
 
@@ -120,6 +163,47 @@ export default class LightTable extends Control {
             let isAllChecked = u.all(inputs, input => input.checked);
             $(this.helper.getPart('check-all')).prop('checked', isAllChecked);
         }
+    }
+
+    onSelectAll() {
+        let checkAll = this.query('#check-all').prop('checked');
+        if (checkAll) {
+            let allIndex = u.range(this.datasource.length);
+            this.set('selectedIndex', allIndex);
+        }
+        else {
+            this.set('selectedIndex', []);
+        }
+
+        this.fire('select');
+    }
+
+    onSelectRow(e) {
+        let target = $(e.target);
+        let index = target.closest('tr').index();
+
+        if (this.selectMode === 'single') {
+            this.set('selectedIndex', index);
+        }
+        else {
+            let checked = target.prop('checked');
+            let selectedIndex = checked ? [...this.selectedIndex, index].sort() : u.without(this.selectedIndex, index);
+            this.set('selectedIndex', selectedIndex);
+        }
+
+        this.fire('select');
+    }
+
+    onSort(e) {
+        let target = $(e.target);
+        let fieldIndex = target.closest('th').index();
+        if (this.selectMode !== 'none') {
+            fieldIndex--;
+        }
+        let field = this.fields[fieldIndex];
+        let order = target.hasClass('ui-icon-sort-asc') ? 'desc' : 'asc';
+        this.setProperties({order: order, orderBy: field.field});
+        this.fire('sort');
     }
 }
 
