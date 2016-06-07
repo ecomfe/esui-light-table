@@ -55,8 +55,8 @@
 </tr>
 
 <!-- target: cell -->
-<td class="${.cell}<!-- if: ${field.contentType} === 'ui'--> ${.cell-ui}<!-- /if -->">
-    <!-- if: ${field.contentType} === 'html'  || ${field.contentType} === 'ui' -->
+<td class="${.cell}<!-- if: ${cell.field.contentType} === 'ui'--> ${.cell-ui}<!-- /if -->">
+    <!-- if: ${cell.field.contentType} === 'html'  || ${cell.field.contentType} === 'ui' -->
         ${cell.content | raw}
     <!-- else: -->
         ${cell.content}

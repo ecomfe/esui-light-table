@@ -1,5 +1,15 @@
+/**
+ * 简易Table控件
+ * Copyright 2016 Baidu Inc. All rights reserved.
+ *
+ * @file 控件实现
+ * @author otakustay
+ */
+
 import Control from 'esui/Control';
+/* eslint-disable no-unused-vars */
 import Tip from 'esui/Tip';
+/* eslint-enable no-unused-vars */
 import ui from 'esui';
 import $ from 'jquery';
 import u from 'underscore';
@@ -22,7 +32,7 @@ export default class LightTable extends Control {
     }
 
     get classPrefix() {
-        return ui.getConfig('uiClassPrefix') + '-' + this.styleType
+        return ui.getConfig('uiClassPrefix') + '-' + this.styleType;
     }
 
     constructor(options) {
@@ -69,7 +79,9 @@ export default class LightTable extends Control {
         }
 
         if (changesIndex.datasource) {
-            this.renderBody();
+            let previous = changesIndex.datasource.oldValue;
+            let current = changesIndex.datasource.newValue;
+            this.renderDatasourceChange(previous, current);
         }
 
         // `selectMode`和`sortMode`不得修改
@@ -91,8 +103,92 @@ export default class LightTable extends Control {
         this.syncSelection();
     }
 
-    renderBody() {
-        // TODO: 实现
+    renderDatasourceChange(previous, current) {
+        // 选中效果全部清除
+        this.set('selectedIndex', []);
+
+        // 取消掉上次更新的高亮
+        this.query('.row').removeClass(this.helper.getPrimaryClassName('row-just-updated'));
+
+        // 一个非常简单的提高效率的算法，主要解决2个常见场景：
+        //
+        // 1. 原数据源中间某几项被更新，其它项未更新
+        // 2. 数据源前或后插入了若干项（只可在一个方向插入，两端都有插入则完全重渲染）
+
+        let sharedCount = Math.min(previous.length, current.length);
+        // 先试下第一个元素是否相同，如果不同则可能是在头部插入了，此时反过来遍历，
+        // 但如果尾巴也不同，就干脆全部重刷了
+        if (u.first(previous) !== u.first(current) && u.last(previous) === u.last(current)) {
+            for (let i = 0; i < sharedCount; i++) {
+                let previousIndex = previous.length - i - 1;
+                let currentIndex = current.length - i - 1;
+                let previousItem = previous[previousIndex];
+                let currentItem = current[currentIndex];
+
+                if (previousItem !== currentItem) {
+                    this.renderRow(currentItem, 'replace', previousIndex);
+                }
+            }
+
+            if (current.length > sharedCount) {
+                // 补上几个
+                let prependItems = u.first(current, current.length - sharedCount).reverse();
+                u.each(prependItems, item => this.renderRow(item, 'prepend'));
+            }
+            else if (current.length < sharedCount) {
+                // 删除几个
+                let removeIndex = u.range(0, sharedCount - current.length);
+                u.each(removeIndex, index => this.renderRow(null, 'remove', index));
+            }
+        }
+        else {
+            for (let i = 0; i < sharedCount; i++) {
+                let previousItem = previous[i];
+                let currentItem = current[i];
+
+                if (previousItem !== currentItem) {
+                    this.renderRow(currentItem, 'replace', i);
+                }
+            }
+
+            if (current.length > sharedCount) {
+                // 补上几个
+                let appendItems = u.last(current, current.length - sharedCount);
+                u.each(appendItems, item => this.renderRow(item, 'append'));
+            }
+            else if (current.length < sharedCount) {
+                // 删除几个
+                let removeIndex = u.range(current.length, sharedCount);
+                u.each(removeIndex, index => this.renderRow(null, 'remove', index));
+            }
+        }
+    }
+
+    renderRow(item, replaceType, index) {
+        let data = u.extend(
+            {row: this.computeRowData(item)},
+            this.computePropertyData()
+        );
+        data.s = data.row.cells.length;
+        let html = this.helper.renderTemplate('row', data);
+        let rowElement = $(html).addClass(this.helper.getPrimaryClassName('row-just-updated'));
+
+        switch (replaceType) {
+            case 'replace':
+                this.query(`.row:eq(${index})`).replaceWith(rowElement);
+                break;
+            case 'prepend':
+                this.query('tbody').prepend(rowElement);
+                break;
+            case 'append':
+                this.query('tbody').append(rowElement);
+                break;
+            case 'remove':
+                this.query(`.row:eq(${index})`).remove();
+                break;
+        }
+
+        this.initUICells(rowElement);
     }
 
     initUICells(row) {
@@ -105,27 +201,34 @@ export default class LightTable extends Control {
         let rows = u.reduce(
             this.datasource,
             (rows, item) => {
-                let cells = u.reduce(
-                    this.fields,
-                    (cells, field) => {
-                        let content = String(field.content(item));
-                        cells.push({item, content, field});
-                        return cells;
-                    },
-                    []
-                );
-
-                rows.push({item, cells});
+                let rowData = this.computeRowData(item);
+                rows.push(rowData);
                 return rows;
             },
             []
         );
-        let properties = u.pick(this, 'fields', 'datasource', 'selectMode', 'classPrefix');
+        let properties = this.computePropertyData();
         return u.extend(properties, {rows});
     }
 
+    computePropertyData() {
+        return u.pick(this, 'fields', 'datasource', 'selectMode', 'classPrefix');
+    }
+
+    computeRowData(item) {
+        let cells = u.reduce(
+            this.fields,
+            (cells, field) => {
+                let content = String(field.content(item));
+                cells.push({item, content, field});
+                return cells;
+            },
+            []
+        );
+        return {item, cells};
+    }
+
     syncSort() {
-        let sortLabelClass = '.' + this.helper.getPrimaryClassName('sort-label');
         let switchSortTo = (selector, type) => {
             let sortClassName = type ? 'ui-icon-sort-' + type : 'ui-icon-sort';
             this.query(selector)

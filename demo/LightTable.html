@@ -4,6 +4,11 @@
     <meta charse="utf-8" />
     <title>LightTable Demo</title>
     <link rel="stylesheet" href="./all.css">
+    <style>
+        .ui-light-table-row-just-updated {
+            background-color: #f5eec6;
+        }
+    </style>
     <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/2-1-4/esl.js"></script>
 </head>
 <body>
@@ -65,6 +70,9 @@
         });
     </script>
     <div id="container">
+        <button type="button" id="append">尾部添加一行</button>
+        <button type="button" id="prepend">头部添加一行</button>
+        <button type="button" id="modify">随便修改一行</button>
     </div>
     <script>
         var datasource = [
@@ -140,8 +148,8 @@
         ];
 
         require(
-            ['LightTable', 'esui/Calendar'],
-            function (module) {
+            ['jquery', 'LightTable', 'esui/Calendar'],
+            function ($, module) {
                 var LightTable = module.default;
                 var options = {
                     fields: fields,
@@ -156,6 +164,27 @@
 
                 table.on('select', function () { console.log('select', table.get('selectedIndex')); });
                 table.on('sort', function () { console.log('sort', table.get('orderBy'), table.get('order')); });
+
+                var clone = function (o) {
+                    return JSON.parse(JSON.stringify(o));
+                };
+
+                $('#prepend').on('click', function () {
+                    datasource = [clone(datasource[0])].concat(datasource);
+                    table.set('datasource', datasource);
+                });
+                $('#append').on('click', function () {
+                    datasource = datasource.concat(clone(datasource[0]));
+                    table.set('datasource', datasource);
+                });
+                $('#modify').on('click', function () {
+                    var index = Math.floor(Math.random() * datasource.length);
+                    var item = clone(datasource[index]);
+                    item.id++;
+                    datasource = $.map(datasource, function (o) { return o; });
+                    datasource[index] = item;
+                    table.set('datasource', datasource);
+                });
             }
         );
     </script>
