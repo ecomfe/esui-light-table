@@ -161,7 +161,6 @@
                     selectedIndex: [0, 1, 2, 3, 4, 5],
                     orderBy: 'name',
                     order: 'asc',
-                    noDataHTML: '无内容'
                 };
                 var table = new LightTable(options)
                 table.appendTo(document.getElementById('container'));
@@ -170,11 +169,11 @@
                 table.on('sort', function () { console.log('sort', table.get('orderBy'), table.get('order')); });
 
                 $('#prepend').on('click', function () {
-                    datasource = [clone(datasource[0])].concat(datasource);
+                    datasource = [u.clone(datasource[0])].concat(datasource);
                     table.set('datasource', datasource);
                 });
                 $('#append').on('click', function () {
-                    datasource = datasource.concat(clone(datasource[0]));
+                    datasource = datasource.concat(u.clone(datasource[0]));
                     table.set('datasource', datasource);
                 });
                 $('#modify').on('click', function () {

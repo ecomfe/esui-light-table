@@ -13,16 +13,10 @@ import Tip from 'esui/Tip';
 import ui from 'esui';
 import $ from 'jquery';
 import u from 'underscore';
-import {Engine} from 'etpl';
-import TEMPLATE from 'text!./LightTable.tpl.html';
+import engine from './templateEngine';
+import defaults from './defaults';
 
 let camelize = str => str.replace(/[A-Z]/g, char => '-' + char.toLowerCase());
-
-let engine = new Engine();
-engine.parse(TEMPLATE);
-engine.addFilter('camelize', camelize);
-
-export {engine};
 
 export default class LightTable extends Control {
     get type() {
@@ -41,6 +35,11 @@ export default class LightTable extends Control {
         super(options);
 
         this.helper.setTemplateEngine(engine);
+    }
+
+    initOptions(options) {
+        let properties = u.defaults({}, options, defaults);
+        this.setProperties(properties);
     }
 
     buildSelector(selector) {
@@ -109,7 +108,6 @@ export default class LightTable extends Control {
         // 先把选中的项存起来，然后选中效果全部清除，等更新后再恢复选中状态，
         // 如果被选中的某一行被更新了，这一行的选中状态会丢失，这是正常的
         let selectedItems = u.map(this.selectedIndex, i => previous[i]);
-        this.set('selectedIndex', []);
 
         // 取消掉上次更新的高亮
         this.query('.row').removeClass(this.helper.getPrimaryClassName('row-just-updated'));
@@ -287,8 +285,11 @@ export default class LightTable extends Control {
 
     syncNoData() {
         this.query('#no-data').remove();
-        let html = this.helper.renderTemplate('noData', u.pick(this, 'noDataHTML'));
-        this.query('#table').after(html);
+
+        if (!this.datasource.length) {
+            let html = this.helper.renderTemplate('noData', u.pick(this, 'noDataHTML'));
+            this.query('#table').after(html);
+        }
     }
 
     onSelectAll() {
