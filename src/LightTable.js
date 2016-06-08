@@ -104,7 +104,9 @@ export default class LightTable extends Control {
     }
 
     renderDatasourceChange(previous, current) {
-        // 选中效果全部清除
+        // 先把选中的项存起来，然后选中效果全部清除，等更新后再恢复选中状态，
+        // 如果被选中的某一行被更新了，这一行的选中状态会丢失，这是正常的
+        let selectedItems = u.map(this.selectedIndex, i => previous[i]);
         this.set('selectedIndex', []);
 
         // 取消掉上次更新的高亮
@@ -162,6 +164,12 @@ export default class LightTable extends Control {
                 u.each(removeIndex, index => this.renderRow(null, 'remove', index));
             }
         }
+
+        let restoredSelectedIndex = u.chain(selectedItems)
+            .map(item => u.indexOf(current, item))
+            .filter(index => index >= 0)
+            .value();
+        this.set('selectedIndex', restoredSelectedIndex);
     }
 
     renderRow(item, replaceType, index) {
