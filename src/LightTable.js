@@ -132,14 +132,14 @@ export default class LightTable extends Control {
                 }
             }
 
-            if (current.length > sharedCount) {
+            if (current.length > previous.length) {
                 // 补上几个
-                let prependItems = u.first(current, current.length - sharedCount).reverse();
+                let prependItems = u.first(current, current.length - previous.length).reverse();
                 u.each(prependItems, item => this.renderRow(item, 'prepend'));
             }
-            else if (current.length < sharedCount) {
+            else if (current.length < previous.length) {
                 // 删除几个
-                let removeIndex = u.range(0, sharedCount - current.length);
+                let removeIndex = u.range(0, previous.length - current.length);
                 u.each(removeIndex, index => this.renderRow(null, 'remove', index));
             }
         }
@@ -153,14 +153,14 @@ export default class LightTable extends Control {
                 }
             }
 
-            if (current.length > sharedCount) {
+            if (current.length > previous.length) {
                 // 补上几个
-                let appendItems = u.last(current, current.length - sharedCount);
+                let appendItems = u.last(current, current.length - previous.length);
                 u.each(appendItems, item => this.renderRow(item, 'append'));
             }
-            else if (current.length < sharedCount) {
+            else if (current.length < previous.length) {
                 // 删除几个
-                let removeIndex = u.range(current.length, sharedCount);
+                let removeIndex = u.range(current.length, previous.length);
                 u.each(removeIndex, index => this.renderRow(null, 'remove', index));
             }
         }
@@ -170,16 +170,21 @@ export default class LightTable extends Control {
             .filter(index => index >= 0)
             .value();
         this.set('selectedIndex', restoredSelectedIndex);
+
+        this.syncNoData();
     }
 
     renderRow(item, replaceType, index) {
+        if (replaceType === 'remove') {
+            this.query(`.row:eq(${index})`).remove();
+            return;
+        }
+
         let data = u.extend(
             {row: this.computeRowData(item)},
             this.computePropertyData()
         );
-        data.s = data.row.cells.length;
-        let html = this.helper.renderTemplate('row', data);
-        let rowElement = $(html).addClass(this.helper.getPrimaryClassName('row-just-updated'));
+        let rowElement = $(this.helper.renderTemplate('row', data));
 
         switch (replaceType) {
             case 'replace':
@@ -190,9 +195,6 @@ export default class LightTable extends Control {
                 break;
             case 'append':
                 this.query('tbody').append(rowElement);
-                break;
-            case 'remove':
-                this.query(`.row:eq(${index})`).remove();
                 break;
         }
 
@@ -220,7 +222,7 @@ export default class LightTable extends Control {
     }
 
     computePropertyData() {
-        return u.pick(this, 'fields', 'datasource', 'selectMode', 'classPrefix');
+        return u.pick(this, 'fields', 'datasource', 'selectMode', 'classPrefix', 'noDataHTML');
     }
 
     computeRowData(item) {
@@ -274,6 +276,12 @@ export default class LightTable extends Control {
             let isAllChecked = u.all(inputs, input => input.checked);
             $(this.helper.getPart('check-all')).prop('checked', isAllChecked);
         }
+    }
+
+    syncNoData() {
+        this.query('#no-data').remove();
+        let html = this.helper.renderTemplate('noData', u.pick(this, 'noDataHTML'));
+        this.query('#table').after(html);
     }
 
     onSelectAll() {

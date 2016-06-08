@@ -1,9 +1,12 @@
 <!-- target: main -->
-<table>
+<table id="${#table}">
     <!-- import: columns -->
     <!-- import: head -->
     <!-- import: body -->
 </table>
+<!-- if: ${rows.length} === 0 -->
+<!-- import: noData -->
+<!-- /if -->
 
 <!-- target: columns -->
 <colgroup>
@@ -73,3 +76,8 @@
         ${cell.content}
     <!-- /if -->
 </td>
+
+<!-- target: noData -->
+<div id="${#no-data}" class="${.no-data}">
+    ${noDataHTML}
+</div>

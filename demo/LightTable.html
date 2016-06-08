@@ -79,6 +79,7 @@
         <button type="button" id="append">尾部添加一行</button>
         <button type="button" id="prepend">头部添加一行</button>
         <button type="button" id="modify">随便修改一行</button>
+        <button type="button" id="remove">随机删除一行</button>
     </div>
     <script>
         var datasource = [
@@ -89,31 +90,31 @@
                 expired: '20141212'
             },
             {
-                id: 2345678,
+                id: 2345679,
                 name: '<span style="color: red">test</span>',
                 url: 'http://www.baidu.com',
                 expired: '20141212'
             },
             {
-                id: 2345678,
+                id: 2345680,
                 name: '<span style="color: red">test</span>',
                 url: 'http://www.baidu.com',
                 expired: '20141212'
             },
             {
-                id: 2345678,
+                id: 2345681,
                 name: '<span style="color: red">test</span>',
                 url: 'http://www.baidu.com',
                 expired: '20141212'
             },
             {
-                id: 2345678,
+                id: 2345682,
                 name: '<span style="color: red">test</span>',
                 url: 'http://www.baidu.com',
                 expired: '20141212'
             },
             {
-                id: 2345678,
+                id: 2345683,
                 name: '<span style="color: red">test</span>',
                 url: 'http://www.baidu.com',
                 expired: '20141212'
@@ -154,26 +155,23 @@
         ];
 
         require(
-            ['jquery', 'LightTable', 'esui/Calendar'],
-            function ($, module) {
+            ['jquery', 'underscore', 'LightTable', 'esui/Calendar'],
+            function ($, u, module) {
                 var LightTable = module.default;
                 var options = {
                     fields: fields,
-                    datasource: datasource,
+                    datasource: [],
                     selectMode: 'multiple',
                     selectedIndex: [0, 1, 2, 3, 4, 5],
                     orderBy: 'name',
-                    order: 'asc'
+                    order: 'asc',
+                    noDataHTML: '无内容'
                 };
                 var table = new LightTable(options)
                 table.appendTo(document.getElementById('container'));
 
                 table.on('select', function () { console.log('select', table.get('selectedIndex')); });
                 table.on('sort', function () { console.log('sort', table.get('orderBy'), table.get('order')); });
-
-                var clone = function (o) {
-                    return JSON.parse(JSON.stringify(o));
-                };
 
                 $('#prepend').on('click', function () {
                     datasource = [clone(datasource[0])].concat(datasource);
@@ -184,11 +182,16 @@
                     table.set('datasource', datasource);
                 });
                 $('#modify').on('click', function () {
-                    var index = Math.floor(Math.random() * datasource.length);
-                    var item = clone(datasource[index]);
-                    item.id++;
-                    datasource = $.map(datasource, function (o) { return o; });
+                    var index = u.random(datasource.length - 1);
+                    var item = u.clone(datasource[index]);
+                    item.id += 100;
+                    datasource = u.clone(datasource);
                     datasource[index] = item;
+                    table.set('datasource', datasource);
+                });
+                $('#remove').on('click', function () {
+                    var index = u.random(datasource.length - 1);
+                    datasource = u.without(datasource, datasource[index]);
                     table.set('datasource', datasource);
                 });
             }
