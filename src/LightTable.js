@@ -18,6 +18,28 @@ import defaults from './defaults';
 
 let camelize = str => str.replace(/[A-Z]/g, char => '-' + char.toLowerCase());
 
+let arrayContentIdentical = (x, y) => {
+    // 丑陋但效率还不错的实现
+    if (x.length !== y.length) {
+        return false;
+    }
+
+    let keyHits = u.reduce(
+        x,
+        (result, value) => {
+            result[value]++;
+            if (!result[value]) {
+                result[value] = 1;
+            }
+            return result;
+        },
+        Object.create(null)
+    );
+    u.each(y, value => keyHits[value]--);
+
+    return u.all(u.values(keyHits), value => value === 0);
+};
+
 export default class LightTable extends Control {
     get type() {
         return 'LightTable';
@@ -79,17 +101,17 @@ export default class LightTable extends Control {
             return;
         }
 
+        // `selectMode`不得修改
+        //
+        // 由于`datasource`变化会导致`selectedIndex`一起变化，所以必须放在后面修改
+        if (changesIndex.selectedIndex) {
+            this.syncSelection();
+        }
+
         if (changesIndex.datasource) {
             let previous = changesIndex.datasource.oldValue;
             let current = changesIndex.datasource.newValue;
             this.renderDatasourceChange(previous, current);
-        }
-
-        // `selectMode`和`sortMode`不得修改
-        if (changesIndex.selectedIndex) {
-            // 由于`datasource`变化会导致`selectedIndex`一起变化，所以当2个同时设置时，需要把这个值恢复过去
-            this.selectedIndex = changesIndex.selectedIndex.newValue;
-            this.syncSelection();
         }
 
         if (changesIndex.order || changesIndex.orderBy) {
@@ -171,7 +193,12 @@ export default class LightTable extends Control {
             .map(item => u.indexOf(current, item))
             .filter(index => index >= 0)
             .value();
-        this.set('selectedIndex', restoredSelectedIndex);
+        // 如果实际上选中的序列还是一样的，就不要再变了，
+        // 此处有可能序列是一样的，但顺序不一样，即`[1, 2, 5]`和`[2, 5, 1]`这种情况，所以要用差集做比较
+        let hasSelectedIndexChanged = !arrayContentIdentical(restoredSelectedIndex, this.selectedIndex);
+        if (hasSelectedIndexChanged) {
+            this.set('selectedIndex', restoredSelectedIndex);
+        }
 
         this.syncNoData();
     }
@@ -268,7 +295,15 @@ export default class LightTable extends Control {
             return;
         }
 
+        // 如果完全没内容则直接隐藏了全选（管它存在与否）然后退出
+        let checkAll = this.query('#check-all');
+        if (!this.datasource.length) {
+            checkAll.prop({checked: false, disabled: true});
+            return;
+        }
+
         let inputs = $(this.main).find('.' + this.helper.getPrimaryClassName('row-select'));
+
         // 先恢复所有
         inputs.prop('checked', false);
 
@@ -281,7 +316,7 @@ export default class LightTable extends Control {
 
             // 判断全选
             let isAllChecked = u.all(inputs, input => input.checked);
-            $(this.helper.getPart('check-all')).prop('checked', isAllChecked);
+            checkAll.prop('checked', isAllChecked);
         }
     }
 
