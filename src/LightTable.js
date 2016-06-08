@@ -16,9 +16,11 @@ import u from 'underscore';
 import {Engine} from 'etpl';
 import TEMPLATE from 'text!./LightTable.tpl.html';
 
+let camelize = str => str.replace(/[A-Z]/g, char => '-' + char.toLowerCase());
+
 let engine = new Engine();
-engine.addFilter('camelize', str => str.replace(/[A-Z]/g, char => '-' + char.toLowerCase()));
 engine.parse(TEMPLATE);
+engine.addFilter('camelize', camelize);
 
 export {engine};
 
@@ -230,7 +232,12 @@ export default class LightTable extends Control {
             this.fields,
             (cells, field) => {
                 let content = String(field.content(item));
-                cells.push({item, content, field});
+                let className = this.helper.getPrimaryClassName('cell-for-' + camelize(field.field));
+                if (field.contentType === 'ui') {
+                    className += ' ' + this.helper.getPrimaryClassName('cell-ui');
+                }
+
+                cells.push({item, content, field, className});
                 return cells;
             },
             []

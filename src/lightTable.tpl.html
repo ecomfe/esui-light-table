@@ -1,22 +1,11 @@
 <!-- target: main -->
 <table id="${#table}">
-    <!-- import: columns -->
     <!-- import: head -->
     <!-- import: body -->
 </table>
 <!-- if: ${rows.length} === 0 -->
 <!-- import: noData -->
 <!-- /if -->
-
-<!-- target: columns -->
-<colgroup>
-    <!-- if: ${selectMode} !== 'none' -->
-    <col class="${.column-select}">
-    <!-- /if -->
-    <!-- for: ${fields} as ${field} -->
-    <col class="${.column} ${classPrefix}-column-for-${field.field}">
-    <!-- /for -->
-</colgroup>
 
 <!-- target: head -->
 <thead>
@@ -35,7 +24,7 @@
 </thead>
 
 <!-- target: headCell -->
-<th class="${.head-cell} ${classPrefix}-head-cell-for-${field.field}">
+<th class="${.head-cell} ${classPrefix}-head-cell-for-${field.field | camelize}">
     <span class="${.head-title}">${field.title}</span>
     <!-- if: ${field.tip} -->
     <esui-tip>${field.tip}</esui-tip>
@@ -69,7 +58,7 @@
 </tr>
 
 <!-- target: cell -->
-<td class="${.cell}<!-- if: ${cell.field.contentType} === 'ui'--> ${.cell-ui}<!-- /if -->">
+<td class="${.cell} ${cell.className}">
     <!-- if: ${cell.field.contentType} === 'html'  || ${cell.field.contentType} === 'ui' -->
         ${cell.content | raw}
     <!-- else: -->

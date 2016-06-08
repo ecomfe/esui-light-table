@@ -5,14 +5,10 @@
     <title>LightTable Demo</title>
     <link rel="stylesheet" href="./all.css">
     <style>
-        .ui-light-table-row-just-updated {
-            background-color: #f5eec6;
-        }
-        .ui-light-table-column-for-id {
-            width: 120px;
-        }
-        .ui-light-table-column-for-expired {
+        .ui-light-table-cell-for-name {
             width: 240px;
+            overflow: hidden;
+            word-break: break-all;
         }
     </style>
     <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/2-1-4/esl.js"></script>
@@ -91,7 +87,7 @@
             },
             {
                 id: 2345679,
-                name: '<span style="color: red">test</span>',
+                name: '<span style="color: red">test</span>testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest',
                 url: 'http://www.baidu.com',
                 expired: '20141212'
             },
@@ -140,7 +136,7 @@
                 }
             },
             {
-                field: 'expired',
+                field: 'expireDate',
                 title: '到期日',
                 tip: '内容支持UI控件',
                 sortable: true,
@@ -160,7 +156,7 @@
                 var LightTable = module.default;
                 var options = {
                     fields: fields,
-                    datasource: [],
+                    datasource: datasource,
                     selectMode: 'multiple',
                     selectedIndex: [0, 1, 2, 3, 4, 5],
                     orderBy: 'name',
