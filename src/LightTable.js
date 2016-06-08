@@ -87,6 +87,8 @@ export default class LightTable extends Control {
 
         // `selectMode`和`sortMode`不得修改
         if (changesIndex.selectedIndex) {
+            // 由于`datasource`变化会导致`selectedIndex`一起变化，所以当2个同时设置时，需要把这个值恢复过去
+            this.selectedIndex = changesIndex.selectedIndex.newValue;
             this.syncSelection();
         }
 
