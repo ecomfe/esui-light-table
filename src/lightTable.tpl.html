@@ -1,8 +1,19 @@
 <!-- target: main -->
 <table>
+    <!-- import: columns -->
     <!-- import: head -->
     <!-- import: body -->
 </table>
+
+<!-- target: columns -->
+<colgroup>
+    <!-- if: ${selectMode} !== 'none' -->
+    <col class="${.column-select}">
+    <!-- /if -->
+    <!-- for: ${fields} as ${field} -->
+    <col class="${.column} ${classPrefix}-column-for-${field.field}">
+    <!-- /for -->
+</colgroup>
 
 <!-- target: head -->
 <thead>
