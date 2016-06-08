@@ -199,6 +199,9 @@ export default class LightTable extends Control {
         if (hasSelectedIndexChanged) {
             this.set('selectedIndex', restoredSelectedIndex);
         }
+        else {
+            this.syncSelection();
+        }
 
         this.syncNoData();
     }
@@ -301,6 +304,8 @@ export default class LightTable extends Control {
             checkAll.prop({checked: false, disabled: true});
             return;
         }
+
+        checkAll.prop('disabled', false);
 
         let inputs = $(this.main).find('.' + this.helper.getPrimaryClassName('row-select'));
 

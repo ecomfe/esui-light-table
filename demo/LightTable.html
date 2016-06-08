@@ -116,6 +116,7 @@
                 expired: '20141212'
             }
         ];
+        var sampleItem = datasource[0];
         var fields = [
             {
                 field: 'id',
@@ -169,11 +170,11 @@
                 table.on('sort', function () { console.log('sort', table.get('orderBy'), table.get('order')); });
 
                 $('#prepend').on('click', function () {
-                    datasource = [u.clone(datasource[0])].concat(datasource);
+                    datasource = [u.clone(sampleItem)].concat(datasource);
                     table.set('datasource', datasource);
                 });
                 $('#append').on('click', function () {
-                    datasource = datasource.concat(u.clone(datasource[0]));
+                    datasource = datasource.concat(u.clone(sampleItem));
                     table.set('datasource', datasource);
                 });
                 $('#modify').on('click', function () {
