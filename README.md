@@ -4,6 +4,18 @@
 
 控件仅支持IE9以上环境使用，且使用ES2015+编写而成，请自行配置`babel`编译代码，使用`es2015`这个`preset`足够。
 
+## 查看示例
+
+运行以下命令安装依赖并打开服务器：
+
+```shell
+edp import
+npm install
+npm run server
+```
+
+随后打开 http://localhost:8848/demo/LightTable.html 即可。
+
 ## 不可变属性
 
 以下属性仅支持创建控件时给定相应的值，不支持在控件渲染后通过`set`或`setProperties`变更：
