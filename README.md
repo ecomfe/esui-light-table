@@ -33,6 +33,7 @@ npm run server
 - `{Object[]} datasource`：数据源，任意结构的对象数组。
 - `{string} orderBy`：排序的字段，需要与`fields`中某一项的`field`属性对应，值为`null`则表示不排序。
 - `{string} order`：排序方式，支持`"asc"`或`"desc"`，如果`orderBy`不为`null`，则该属性也不能为`null`。
+- `{number | number[]} selectedIndex`：选中行的索引，类型与`selectMode`属性有关，当其值为`"single"`时类型为`number`，为`"multiple"`时类型为`number[]`。
 
 其中`Field`列配置支持以下属性：
 
@@ -45,6 +46,13 @@ npm run server
     - `"html"`：内容不会被HTML编码，直接输出。
     - `"ui"`：内容不被HTML编码直接输出，且支持生成`esui`控件。
 - `{Function(Object): string} content`：生成内容的函数，被调用时接收当前行的数据项为参数，无`this`。
+
+## 事件
+
+以下为`LightTable`提供的事件，如无特殊说明，所有事件的`Event`对象中没有除`target`等默认属性以外的属性，且所有事件**仅在用户操作时触发**，程序调用（如`.set`）不会触发事件：
+
+- `sort`：排序改变时触发。
+- `select`：选中行改变时触发。
 
 ## 数据更新
 
@@ -86,6 +94,8 @@ table.set('datasource', datasource);
 ```
 
 具体使用方式请看[diffy-update](https://github.com/ecomfe/diffy-update)库的文档。
+
+在数据更新后，被判断为更新过（引用不同）的项的选中状态将被取消（哪怕你只改了某一个属性，但是`LightTable`不负责通过某个属性判断是不是同一项），其它未更新的项的选中状态会被保留。
 
 Immutable有助于`LightTable`在更新`datasource`减少更新的DOM数量，现实现使用了一个简单的比较更新，可在以下场景下将更新量减小到最少：
 
