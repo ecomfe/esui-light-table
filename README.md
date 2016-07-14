@@ -43,6 +43,7 @@ npm run server
 - `{boolean} sortable`：控制列是否可排序，默认为`false`。
 - `{string} contentType`：列的取值类型，可为`"text"`、`"html"`或`"ui"`，默认为`"text"`，各值作用如下：
     - `"text"`：内容会被HTML编码。
+    - `"pre"`：内容会被HTML编码，并在一个`<pre>`标签中输出。
     - `"html"`：内容不会被HTML编码，直接输出。
     - `"ui"`：内容不被HTML编码直接输出，且支持生成`esui`控件。
 - `{Function(Object): string} content`：生成内容的函数，被调用时接收当前行的数据项为参数，无`this`。

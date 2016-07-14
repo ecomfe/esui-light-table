@@ -61,6 +61,8 @@
 <td class="${.cell} ${cell.className}">
     <!-- if: ${cell.field.contentType} === 'html'  || ${cell.field.contentType} === 'ui' -->
         ${cell.content | raw}
+    <!-- elif: ${cell.field.contentType} === 'pre' -->
+        <pre>${cell.content}</pre>
     <!-- else: -->
         ${cell.content}
     <!-- /if -->
