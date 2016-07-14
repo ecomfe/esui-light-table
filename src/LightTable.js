@@ -122,7 +122,7 @@ export default class LightTable extends Control {
     renderAll() {
         let viewData = this.computeViewData();
         this.main.innerHTML = this.helper.renderTemplate('main', viewData);
-        this.initChildren(this.query('thead').get(0));
+        this.helper.initConnectedChildren(this.query('thead').get(0));
         this.initUICells();
         this.syncSort();
         this.syncSelection();
@@ -208,7 +208,16 @@ export default class LightTable extends Control {
 
     renderRow(item, replaceType, index) {
         if (replaceType === 'remove') {
-            this.query(`.row:eq(${index})`).remove();
+            let row = this.helper.query(`.row:eq(${index})`);
+
+            let array = Array.from(row.get(0).getElementsByTagName('*'))
+                .map(element => mainui.getControlByDOM(element))
+                .filter(control => !!control)
+                .forEach(control => control.dispose());
+
+                console.log(array);
+
+            row.remove();
             return;
         }
 
